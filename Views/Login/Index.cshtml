@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg mx-auto p-4" style="max-width:400px; background: linear-gradient(to bottom right, #ffffff, #e3f2fd);">
+        <h3 class="text-center mb-4 text-primary"><i class="fas fa-sign-in-alt"></i> Login</h3>
+        <form method="post">
+            <div class="mb-3">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control form-control-lg" required />
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control form-control-lg" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold"><i class="fas fa-key"></i> Login</button>
+        </form>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+
+        <div class="text-center mt-3">
+            <a asp-controller="Registration" asp-action="Index">Don’t have an account? Register here</a>
+        </div>
+    </div>
+</div>

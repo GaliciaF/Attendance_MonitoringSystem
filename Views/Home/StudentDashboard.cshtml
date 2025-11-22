@@ -1,0 +1,60 @@
+﻿@model IEnumerable<AttendanceSystem.Models.Attendance>
+@{
+    ViewData["Title"] = "Student Dashboard";
+}
+
+<div class="container mt-5">
+    <h3 class="text-center text-primary mb-4">🎓 Welcome, @ViewBag.StudentName!</h3>
+
+    <div class="card shadow-lg p-3 rounded">
+        @if (Model.Any())
+        {
+            <table class="table table-hover table-striped text-center align-middle">
+                <thead class="table-info">
+                    <tr>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(item.Subject?.SubjectName ?? "—")</td>
+                            <td>@item.Date.ToString("MMM dd, yyyy")</td>
+                            <td>@item.TimeIn.ToString(@"hh\:mm")</td>
+                            <td>@(item.TimeOut?.ToString(@"hh\:mm") ?? "Not set")</td>
+                            <td>@(item.Duration?.ToString() ?? "N/A")</td>
+                            <td>
+                                @if (!item.TimeOut.HasValue)
+                                {
+                                    <form asp-action="CheckOut" method="post" style="display:inline;">
+                                        <input type="hidden" name="attendanceId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-warning">Check Out</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No attendance records found.</p>
+        }
+
+        <a asp-action="Logout" class="btn btn-secondary">Logout</a>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #cff4fc;
+        transition: 0.2s;
+    }
+</style>

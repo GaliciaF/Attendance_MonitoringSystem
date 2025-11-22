@@ -1,0 +1,39 @@
+﻿@model AttendanceSystem.Models.Attendance
+@{
+    ViewData["Title"] = "Add Attendance";
+}
+
+<div class="card shadow p-4 mx-auto mt-4" style="max-width:500px;">
+    <h4 class="text-center text-success mb-3">Record Attendance</h4>
+
+    <form asp-action="AddAttendance" method="post">
+        <div class="mb-3">
+            <label>Student</label>
+            <select asp-for="StudentId" class="form-select" required>
+                <option value="">Select Student</option>
+                @foreach (var s in ViewBag.Students)
+                {
+                    <option value="@s.Id">@s.StudentName</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Subject</label>
+            <select asp-for="SubjectId" class="form-select" required>
+                <option value="">Select Subject</option>
+                @foreach (var sub in ViewBag.Subjects)
+                {
+                    <option value="@sub.Id">@sub.SubjectName</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Submit</button>
+    </form>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["Success"]</div>
+    }
+</div>

@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg mx-auto p-4" style="max-width:500px; background: linear-gradient(to bottom right, #ffffff, #f0fff4);">
+        <h3 class="text-center mb-4 text-success"><i class="fas fa-user-plus"></i> Registration</h3>
+
+        <form method="post">
+            <div class="mb-3">
+                <label>Select Role</label>
+                <select name="role" class="form-select form-select-lg" required>
+                    <option value="">-- Select --</option>
+                    <option value="Admin">Admin / Teacher</option>
+                    <option value="Student">Student</option>
+                </select>
+            </div>
+
+            <div id="adminFields" class="mb-3">
+                <h5 class="text-primary fw-bold">Admin Info</h5>
+                <label>Username:</label>
+                <input type="text" name="adminUsername" class="form-control mb-2" />
+                <label>Password:</label>
+                <input type="password" name="adminPassword" class="form-control" />
+            </div>
+
+            <div id="studentFields" class="mb-3">
+                <h5 class="text-success fw-bold">Student Info</h5>
+                <label>Student Name:</label>
+                <input type="text" name="studentName" class="form-control mb-2" />
+                <label>Student Number:</label>
+                <input type="text" name="studentNo" class="form-control mb-2" />
+                <label>Email:</label>
+                <input type="email" name="studentEmail" class="form-control mb-2" />
+                <label>Password:</label>
+                <input type="password" name="studentPassword" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100 fw-bold"><i class="fas fa-check-circle"></i> Register</button>
+        </form>
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success mt-3">@ViewBag.Message</div>
+        }
+    </div>
+</div>
+
+<script>
+    const roleSelect = document.querySelector('select[name="role"]');
+    const adminFields = document.getElementById('adminFields');
+    const studentFields = document.getElementById('studentFields');
+    adminFields.style.display = 'none';
+    studentFields.style.display = 'none';
+
+    roleSelect.addEventListener('change', function () {
+        if (this.value === 'Admin') { adminFields.style.display = 'block'; studentFields.style.display = 'none'; }
+        else if (this.value === 'Student') { adminFields.style.display = 'none'; studentFields.style.display = 'block'; }
+        else { adminFields.style.display = 'none'; studentFields.style.display = 'none'; }
+    });
+</script>

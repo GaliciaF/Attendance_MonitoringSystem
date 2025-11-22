@@ -1,0 +1,51 @@
+﻿@model IEnumerable<AttendanceSystem.Models.Attendance>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h3 class="text-center text-primary mb-4">Instructor Dashboard</h3>
+<p class="text-center text-primary mb-4">Welcome, @ViewBag.Username</p>
+
+<a asp-action="PendingUsers" class="btn btn-primary">Manage Pending Users</a>
+<a asp-action="AddAttendance" class="btn btn-success mb-3">+ Add Attendance</a>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered table-striped">
+    <thead class="table-primary">
+        <tr>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Time In</th>
+            <th>Time Out</th>
+            <th>Duration</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(item.Student?.StudentName ?? "—")</td>
+                <td>@(item.Subject?.SubjectName ?? "—")</td>
+                <td>@item.Date.ToShortDateString()</td>
+                <td>@item.TimeIn</td>
+                <td>@(item.TimeOut?.ToString() ?? "Not set")</td>
+                <td>@(item.Duration?.ToString() ?? "N/A")</td>
+
+                
+                <td>
+                    <a asp-action="EditAttendance" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                    <form asp-action="DeleteAttendance" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
