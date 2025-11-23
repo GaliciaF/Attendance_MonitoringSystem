@@ -50,7 +50,7 @@ namespace Attendance_Monitoring_System.Migrations
                         {
                             Id = 1,
                             IsApproved = true,
-                            Password = "$2a$11$SaUg7r1FkVsEcJkADS0I4e/Nnitfsq8GYU5F02G5AEi9IWy9WOx8i",
+                            Password = "$2a$11$BlGTbJlRUu6jacsmHxbrsORq1UwoQKEfvg0GkD0Itec64su/duNdO",
                             Username = "admin"
                         });
                 });

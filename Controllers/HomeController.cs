@@ -14,8 +14,52 @@ namespace AttendanceSystem.Controllers
             _context = context;
         }
 
-        // Admin Dashboard
+
         public IActionResult Dashboard()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            ViewBag.Username = username;
+
+            // Fetch Total Students
+            int totalStudents = _context.Students.Count();
+
+            // Present Today (TimeIn recorded today)
+            int presentToday = _context.Attendances
+                .Where(a => a.Date.Date == DateTime.Today && a.TimeIn != null)
+                .Count();
+
+            // Absent Today  (all - present)
+            int absentToday = totalStudents - presentToday;
+
+            // Classes Today (sample: count unique subjects with attendance today)
+            int classesToday = _context.Attendances
+                .Where(a => a.Date.Date == DateTime.Today)
+                .Select(a => a.SubjectId)
+                .Distinct()
+                .Count();
+
+            // Recent Activity – last 10 attendance logs
+            var recentActivity = _context.Attendances
+                .OrderByDescending(a => a.Date)
+                .ThenByDescending(a => a.TimeIn)
+                .Take(10)
+                .Select(a => new {
+                    Action = "Marked attendance for " + a.Subject.SubjectName,
+                    Instructor = username,
+                    Timestamp = a.Date.ToString("MMM dd yyyy") + " - " + a.TimeIn
+                })
+                .ToList();
+
+            ViewBag.TotalStudents = totalStudents;
+            ViewBag.PresentToday = presentToday;
+            ViewBag.AbsentToday = absentToday;
+            ViewBag.ClassesToday = classesToday;
+            ViewBag.RecentActivity = recentActivity;
+
+            return View();
+        }
+
+        public IActionResult Attendance()
         {
             var role = HttpContext.Session.GetString("Role");
             if (role != "Admin") return RedirectToAction("Index", "Login");

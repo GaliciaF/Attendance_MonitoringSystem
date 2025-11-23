@@ -1,51 +1,159 @@
-﻿@model IEnumerable<AttendanceSystem.Models.Attendance>
+﻿@model IEnumerable<AttendanceSystem.Models.Admin>
 @{
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h3 class="text-center text-primary mb-4">Instructor Dashboard</h3>
-<p class="text-center text-primary mb-4">Welcome, @ViewBag.Username</p>
+<style>
+    body {
+        background: linear-gradient(135deg, #A8DADC, #F1FAEE);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+        color: #1A4C5C;
+    }
 
-<a asp-action="PendingUsers" class="btn btn-primary">Manage Pending Users</a>
-<a asp-action="AddAttendance" class="btn btn-success mb-3">+ Add Attendance</a>
+    h3, p {
+        text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.1);
+    }
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+    h3 {
+        color: #1A4C5C;
+        font-weight: 800;
+    }
 
-<table class="table table-bordered table-striped">
-    <thead class="table-primary">
-        <tr>
-            <th>Student</th>
-            <th>Subject</th>
-            <th>Date</th>
-            <th>Time In</th>
-            <th>Time Out</th>
-            <th>Duration</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@(item.Student?.StudentName ?? "—")</td>
-                <td>@(item.Subject?.SubjectName ?? "—")</td>
-                <td>@item.Date.ToShortDateString()</td>
-                <td>@item.TimeIn</td>
-                <td>@(item.TimeOut?.ToString() ?? "Not set")</td>
-                <td>@(item.Duration?.ToString() ?? "N/A")</td>
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
 
-                
-                <td>
-                    <a asp-action="EditAttendance" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                    <form asp-action="DeleteAttendance" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
+    .stat-card {
+        padding: 1.8rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: 0.25s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 26px rgba(0,0,0,0.15);
         }
-    </tbody>
-</table>
+
+        .stat-card i {
+            font-size: 3rem;
+            color: #1A4C5C;
+            margin-bottom: 0.8rem;
+        }
+
+    .stat-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1A4C5C;
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #457B9D;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #457B9D, #1A4C5C);
+        border: none;
+    }
+
+    .table-container {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.25);
+        border-radius: 1rem;
+        padding: 1rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    table.table thead {
+        background: linear-gradient(90deg, #457B9D, #1A4C5C);
+        color: #F1FAEE;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <h3 class="text-center mb-2">Instructor Dashboard</h3>
+    <p class="text-center mb-4">Welcome, <strong>@ViewBag.Username</strong></p>
+
+    <!-- 🌟 Dynamic Dashboard Stats -->
+    <div class="dashboard-cards">
+
+        <div class="stat-card">
+            <i class="fas fa-users"></i>
+            <div class="stat-title">Total Students</div>
+            <div class="stat-value">@ViewBag.TotalStudents</div>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-user-check"></i>
+            <div class="stat-title">Present Today</div>
+            <div class="stat-value">@ViewBag.PresentToday</div>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-user-times"></i>
+            <div class="stat-title">Absent Today</div>
+            <div class="stat-value">@ViewBag.AbsentToday</div>
+        </div>
+
+        <div class="stat-card">
+            <i class="fas fa-calendar-day"></i>
+            <div class="stat-title">Classes Today</div>
+            <div class="stat-value">@ViewBag.ClassesToday</div>
+        </div>
+
+    </div>
+
+    <div class="text-center mb-4">
+        <a href="/Home/Attendance" class="btn btn-primary btn-lg me-2">
+            <i class="fas fa-chart-line"></i> View Attendance Overview
+        </a>
+
+        <a href="/Home/PendingUsers" class="btn btn-primary btn-lg">
+            <i class="fas fa-users-cog"></i> Manage Users
+        </a>
+    </div>
+
+    <!-- 🌟 Recent Activity -->
+    <div class="table-container mt-4">
+        <h4 class="mb-3 text-center">Recent Activity</h4>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Instructor</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in ViewBag.RecentActivity)
+                {
+                    <tr>
+                        <td>@log.Action</td>
+                        <td>@log.Instructor</td>
+                        <td>@log.Timestamp</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

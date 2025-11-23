@@ -1,0 +1,269 @@
+﻿@model IEnumerable<AttendanceSystem.Models.Attendance>
+@{
+    ViewData["Title"] = "Attendance";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #2F8F9D, #A8DADC, #F1FAEE);
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+        color: #0F3D3E;
+        padding-bottom: 40px;
+    }
+
+    h3 {
+        color: #0F3D3E;
+        font-weight: 800;
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.7rem;
+        margin: 20px auto 30px auto;
+    }
+
+    .dash-card {
+        width: 260px;
+        padding: 1.7rem;
+        border-radius: 1.2rem;
+        background: rgba(255, 255, 255, 0.40);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        text-align: center;
+        transition: all .25s ease-in-out;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+        .dash-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.18);
+        }
+
+    .dash-card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+        color: #0F3D3E;
+    }
+
+    .dash-card h4 {
+        font-size: 1.15rem;
+        color: #0F3D3E;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+    }
+
+    .dash-card p {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #2F8F9D;
+        margin: 0;
+    }
+
+    /* Filters */
+    .filters {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+        .filters select {
+            padding: 0.6rem 1rem;
+            border-radius: 0.7rem;
+            border: 2px solid #2F8F9D;
+            background: rgba(255,255,255,0.6);
+            font-weight: 600;
+            color: #0F3D3E;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+            .filters select:hover {
+                background: rgba(255,255,255,0.85);
+                border-color: #FFBF86;
+            }
+
+    /* Table Enhancements */
+    .table-responsive {
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.40);
+        border-radius: 1rem;
+        padding: 1.2rem;
+        box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+    }
+
+    table.table thead {
+        background: linear-gradient(90deg, #0F3D3E, #2F8F9D);
+        color: #F1FAEE;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    table.table tbody tr {
+        background: linear-gradient( 90deg, rgba(255,255,255,0.55), rgba(255,255,255,0.35) );
+        transition: 0.25s ease-in-out;
+    }
+
+        table.table tbody tr:hover {
+            background: rgba(255,255,255,0.85);
+            transform: scale(1.01);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+        }
+
+</style>
+
+<h3>Attendance Records</h3>
+
+<!-- DASHBOARD CARDS -->
+<div class="dashboard-cards">
+
+    <div class="dash-card">
+        <div class="dash-card-icon">📊</div>
+        <h4>Total Attendance Records</h4>
+        <p>@Model.Count()</p>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-icon">🟢</div>
+        <h4>Students Present Today</h4>
+        <p>@Model.Count(a => a.Date == DateTime.Today)</p>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-icon">📘</div>
+        <h4>Subjects Recorded</h4>
+        <p>@Model.Select(a => a.SubjectId).Distinct().Count()</p>
+    </div>
+
+    <div class="dash-card">
+        <div class="dash-card-icon">⏳</div>
+        <h4>Missing Time-Out</h4>
+        <p>@Model.Count(a => a.TimeOut == null)</p>
+    </div>
+
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+    <select id="filterSubject">
+        <option value="">Filter by Subject</option>
+        @foreach (var sub in Model.Select(a => a.Subject?.SubjectName).Distinct())
+        {
+            <option value="@sub">@sub</option>
+        }
+    </select>
+
+    <select id="filterStudent">
+        <option value="">Filter by Student</option>
+        @foreach (var stu in Model.Select(a => a.Student?.StudentName).Distinct())
+        {
+            <option value="@stu">@stu</option>
+        }
+    </select>
+
+    <select id="filterDate">
+        <option value="">Filter by Date</option>
+        @foreach (var d in Model.Select(a => a.Date.ToShortDateString()).Distinct())
+        {
+            <option value="@d">@d</option>
+        }
+    </select>
+</div>
+
+<!-- BUTTONS -->
+<div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
+    <a asp-action="PendingUsers" class="btn btn-primary">Manage Pending Users</a>
+    <a asp-action="AddAttendance" class="btn btn-success">+ Add Attendance</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success text-center fw-bold">@TempData["Success"]</div>
+}
+
+<!-- TABLE -->
+<div class="table-responsive shadow-sm rounded mt-3">
+    <table class="table table-bordered table-striped mb-0" id="attendanceTable">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Subject</th>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Duration</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.Student?.StudentName ?? "—")</td>
+                    <td>@(item.Subject?.SubjectName ?? "—")</td>
+                    <td>@item.Date.ToShortDateString()</td>
+                    <td>@item.TimeIn</td>
+                    <td>@(item.TimeOut?.ToString() ?? "Not set")</td>
+                    <td>@(item.Duration?.ToString() ?? "N/A")</td>
+                    <td class="d-flex gap-1 justify-content-center">
+                        <a asp-action="EditAttendance" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+
+                        <form asp-action="DeleteAttendance" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Are you sure?')">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const filterSubject = document.getElementById("filterSubject");
+    const filterStudent = document.getElementById("filterStudent");
+    const filterDate = document.getElementById("filterDate");
+
+    const table = document.getElementById("attendanceTable");
+    const rows = table.getElementsByTagName("tr");
+
+    function filterTable() {
+        const subject = filterSubject.value.toLowerCase();
+        const student = filterStudent.value.toLowerCase();
+        const date = filterDate.value.toLowerCase();
+
+        for (let i = 1; i < rows.length; i++) {
+            let sub = rows[i].cells[1].innerText.toLowerCase();
+            let stu = rows[i].cells[0].innerText.toLowerCase();
+            let dat = rows[i].cells[2].innerText.toLowerCase();
+
+            rows[i].style.display =
+                (subject === "" || sub.includes(subject)) &&
+                (student === "" || stu.includes(student)) &&
+                (date === "" || dat.includes(date))
+                ? ""
+                : "none";
+        }
+    }
+
+    filterSubject.onchange = filterTable;
+    filterStudent.onchange = filterTable;
+    filterDate.onchange = filterTable;
+</script>

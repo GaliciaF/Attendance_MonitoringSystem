@@ -6,72 +6,153 @@
     <title>@ViewData["Title"] - Attendance Monitoring System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1A535C, #4ECDC4); /* matches login page */
+            color: #0F3D3E;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            min-height: 100vh;
+            background-color: #0B2A33;
+            color: #FFD87D;
+            width: 220px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar .navbar-brand {
+                color: #FFD87D !important;
+                font-weight: 700;
+            }
+
+            .sidebar .nav-link {
+                color: #FFD87D;
+                font-weight: 600;
+                padding: 0.75rem 1.25rem;
+                display: block;
+                transition: all 0.2s;
+            }
+
+                .sidebar .nav-link:hover,
+                .sidebar .nav-link.active {
+                    background-color: #2F8F9D;
+                    color: #ffffff;
+                    border-radius: 0.5rem;
+                }
+
+        /* Main content */
+        .main-content {
+            margin-left: 220px;
+            padding: 2rem;
+            flex: 1; /* ensures footer pushed to bottom */
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1A535C, #4ECDC4); /* same as login bg */
+            color: #FFD87D;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: auto; /* pushes footer to bottom */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar responsive */
+        @@media (max-width: 992px) {
+            .sidebar
+
+        {
+            position: relative;
+            width: 100%;
+            min-height: auto;
+        }
+
+        .main-content {
+            margin-left: 0;
+        }
+
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-            <div class="container-fluid">
-                <a class="navbar-brand fw-bold" href="@Url.Action("Index", "Home")">
-                    Attendance System
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a class="navbar-brand px-3 mb-4" href="@Url.Action("Index")">
+            Attendance System
+        </a>
 
-                <div class="collapse navbar-collapse" id="navbarContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        @if (Context.Session.GetString("Role") == "Admin")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Dashboard", "Home")">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("AddAttendance", "Home")">Add Attendance</a>
-                            </li>
-                        }
-                        else if (Context.Session.GetString("Role") == "Student")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("StudentDashboard", "Home")">My Attendance</a>
-                            </li>
-                        }
-                    </ul>
+        <ul class="nav flex-column">
+            @if (Context.Session.GetString("Role") == "Admin")
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["Title"].ToString() == "Dashboard" ? "active" : "")" href="@Url.Action("Dashboard", "Home")">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["Title"].ToString() == "Attendance" ? "active" : "")" href="@Url.Action("Attendance", "Home")">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["Title"].ToString() == "PendingUsers" ? "active" : "")" href="@Url.Action("PendingUsers", "Home")">Manage Pending Users</a>
+                </li>
 
-                    <ul class="navbar-nav ms-auto">
-                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")))
-                        {
-                            var role = Context.Session.GetString("Role");
-                            var displayName = role == "Admin"
+            }
+            else if (Context.Session.GetString("Role") == "Student")
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(ViewData["Title"].ToString() == "StudentDashboard" ? "active" : "")" href="@Url.Action("StudentDashboard", "Home")">My Attendance</a>
+                </li>
+            }
+
+            <li class="nav-item mt-auto px-3">
+                @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")))
+                {
+                    <span class="nav-link fw-bold">
+                        @(Context.Session.GetString("Role") == "Admin"
                             ? $"👨‍🏫 {Context.Session.GetString("Username")}"
-                            : $"🎓 {Context.Session.GetString("StudentName")}";
+                            : $"🎓 {Context.Session.GetString("StudentName")}"
+                            )
+                    </span>
+                }
+            </li>
+            <li class="nav-item px-3 mb-3">
+                @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")))
+                {
+                    <a class="nav-link btn btn-outline-light w-100 text-center" href="@Url.Action("Logout", "Home")">Logout</a>
+                }
+                else
+                {
+                    <a class="nav-link btn btn-outline-light w-100 text-center" href="@Url.Action("Index", "Login")">Login</a>
+                }
+            </li>
+        </ul>
+    </div>
 
-                            <li class="nav-item">
-                                <span class="nav-link fw-bold text-light">@displayName</span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light ms-2" href="@Url.Action("Logout", "Home")">Logout</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-outline-light" href="@Url.Action("Index", "Login")">Login</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <main class="container mt-4">
+    <!-- Main content -->
+    <div class="main-content">
         @RenderBody()
-    </main>
+    </div>
 
-    <footer class="bg-light text-center py-3 mt-4 shadow-sm">
+    <!-- Footer -->
+    <footer>
         <small>&copy; 2025 Attendance Monitoring System</small>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

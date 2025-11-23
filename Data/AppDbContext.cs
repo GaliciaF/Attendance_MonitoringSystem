@@ -28,13 +28,14 @@ namespace AttendanceSystem.Data
             );
 
             // Seed Default Admin
-            // Username: admin
+            // Username: admin@gmail.com+
+
             // Password: admin123
             modelBuilder.Entity<Admin>().HasData(
                 new Admin
                 {
                     Id = 1,
-                    Username = "admin",
+                    Username = "admin@gmail.com",
                     Password = BCrypt.Net.BCrypt.HashPassword("admin123"),
                     IsApproved = true
                 }

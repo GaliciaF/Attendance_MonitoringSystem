@@ -3,8 +3,55 @@
     ViewData["Title"] = "Add Attendance";
 }
 
-<div class="card shadow p-4 mx-auto mt-4" style="max-width:500px;">
-    <h4 class="text-center text-success mb-3">Record Attendance</h4>
+<style>
+    .card-attendance {
+        border-radius: 1rem;
+        border-top: 5px solid #2F8F9D;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        background-color: #ffffff;
+    }
+
+    h4.text-success, .card-attendance h4 {
+        color: #2F8F9D !important;
+    }
+
+    .btn-success {
+        background-color: #FFBF86;
+        border-color: #FFBF86;
+        color: #0F3D3E;
+        font-weight: 600;
+    }
+
+    .btn-success:hover {
+        background-color: #2F8F9D;
+        border-color: #2F8F9D;
+        color: #ffffff;
+    }
+
+    label {
+        font-weight: 500;
+        color: #0F3D3E;
+    }
+
+    select.form-select, .form-control {
+        border-radius: 0.5rem;
+        border: 1px solid #2F8F9D;
+    }
+
+    select.form-select:focus, .form-control:focus {
+        border-color: #0F3D3E;
+        box-shadow: 0 0 0 0.2rem rgba(47, 143, 157, 0.25);
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+</style>
+
+<div class="card card-attendance shadow p-4 mx-auto mt-4" style="max-width:500px;">
+    <h4 class="text-center mb-4">Record Attendance</h4>
 
     <form asp-action="AddAttendance" method="post">
         <div class="mb-3">
@@ -29,7 +76,9 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success w-100">Submit</button>
+        <button type="submit" class="btn btn-success w-100 btn-lg fw-bold">
+            <i class="fas fa-check-circle me-2"></i> Submit
+        </button>
     </form>
 
     @if (TempData["Success"] != null)

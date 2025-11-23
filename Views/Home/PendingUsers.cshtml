@@ -1,74 +1,207 @@
 ﻿@{
-	ViewData["Title"] = "Pending User Approvals";   
+    ViewData["Title"] = "Pending User Approvals";
 }
 
-<h2>Pending User Approvals</h2>
-<p>Welcome, @ViewBag.Username</p>
+<div class="container mt-4">
 
-@if (ViewBag.PendingAdmins != null && ViewBag.PendingAdmins.Count > 0)
-{
-    <h3>Pending Admins</h3>
-    <table class="table">
-        <thead>
-            <tr><th>Username</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var admin in ViewBag.PendingAdmins)
-            {
-                <tr>
-                    <td>@admin.Username</td>
-                    <td>
-                        <form asp-action="ApproveAdmin" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@admin.Id" />
-                            <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                        <form asp-action="RejectAdmin" method="post" style="display:inline; margin-left: 10px;">
-                            <input type="hidden" name="id" value="@admin.Id" />
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this admin? This will delete their registration.')">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No pending admins.</p>
-}
+    <h2 class="text-center mb-2 fw-bold">Pending User Approvals</h2>
+    <p class="text-center mb-4 fs-5">
+        Welcome, <strong>@ViewBag.Username</strong>
+    </p>
 
-@if (ViewBag.PendingStudents != null && ViewBag.PendingStudents.Count > 0)
-{
-    <h3>Pending Students</h3>
-    <table class="table">
-        <thead>
-            <tr><th>Student Name</th><th>Student No</th><th>Email</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var student in ViewBag.PendingStudents)
-            {
-                <tr>
-                    <td>@student.StudentName</td>
-                    <td>@student.StudentNo</td>
-                    <td>@student.Email</td>
-                    <td>
-                        <form asp-action="ApproveStudent" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@student.Id" />
-                            <button type="submit" class="btn btn-success">Approve</button>
-                        </form>
-                        <form asp-action="RejectStudent" method="post" style="display:inline; margin-left: 10px;">
-                            <input type="hidden" name="id" value="@student.Id" />
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this student? This will delete their registration.')">Reject</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No pending students.</p>
-}
+    @if ((ViewBag.PendingAdmins != null && ViewBag.PendingAdmins.Count > 0) ||
+    (ViewBag.PendingStudents != null && ViewBag.PendingStudents.Count > 0))
+    {
+        <!-- Pending Admins -->
+        @if (ViewBag.PendingAdmins != null && ViewBag.PendingAdmins.Count > 0)
+        {
+            <div class="card mb-4 shadow-soft">
+                <div class="card-header header-primary text-light fw-bold fs-5">
+                    Pending Admins
+                </div>
 
-<a asp-action="Dashboard">Back to Dashboard</a>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 table-custom">
+                            <thead class="thead-custom">
+                                <tr>
+                                    <th>Username</th>
+                                    <th style="width:200px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var admin in ViewBag.PendingAdmins)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@admin.Username</td>
+                                        <td class="d-flex gap-2 justify-content-center">
+                                            <form asp-action="ApproveAdmin" method="post">
+                                                <input type="hidden" name="id" value="@admin.Id" />
+                                                <button type="submit" class="btn-approve">Approve</button>
+                                            </form>
+
+                                            <form asp-action="RejectAdmin" method="post">
+                                                <input type="hidden" name="id" value="@admin.Id" />
+                                                <button type="submit" class="btn-reject"
+                                                        onclick="return confirm('Reject this admin? This will delete the registration.')">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Pending Students -->
+        @if (ViewBag.PendingStudents != null && ViewBag.PendingStudents.Count > 0)
+        {
+            <div class="card mb-4 shadow-soft">
+                <div class="card-header header-primary text-light fw-bold fs-5">
+                    Pending Students
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 table-custom">
+                            <thead class="thead-custom">
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Student No</th>
+                                    <th>Email</th>
+                                    <th style="width:200px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var student in ViewBag.PendingStudents)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@student.StudentName</td>
+                                        <td class="fw-semibold">@student.StudentNo</td>
+                                        <td class="fw-semibold">@student.Email</td>
+                                        <td class="d-flex gap-2 justify-content-center">
+                                            <form asp-action="ApproveStudent" method="post">
+                                                <input type="hidden" name="id" value="@student.Id" />
+                                                <button type="submit" class="btn-approve">Approve</button>
+                                            </form>
+
+                                            <form asp-action="RejectStudent" method="post">
+                                                <input type="hidden" name="id" value="@student.Id" />
+                                                <button type="submit" class="btn-reject"
+                                                        onclick="return confirm('Reject this student? This will delete the registration.')">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info text-center fs-5 shadow-soft bg-light border-0">
+            No pending users.
+        </div>
+    }
+
+    <div class="text-center mt-3">
+        <a asp-action="Dashboard" class="btn-back">Back to Dashboard</a>
+    </div>
+
+</div>
+
+
+<style>
+
+    /* Smooth Background */
+    body {
+        background: linear-gradient(135deg, #2F8F9D, #A8DADC, #F1FAEE);
+        font-family: 'Segoe UI', sans-serif;
+        color: #0F3D3E;
+    }
+
+    /* Soft shadow for cards */
+    .shadow-soft {
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        border-radius: 0.75rem;
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(8px);
+    }
+
+    /* Header Gradient */
+    .header-primary {
+        background: linear-gradient(90deg, #0F3D3E, #2F8F9D);
+    }
+
+    /* Table Styling */
+    .table-custom {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .thead-custom {
+        background: linear-gradient(90deg, #2F8F9D, #0F3D3E);
+        color: #F1FAEE;
+    }
+
+    .table-hover tbody tr:hover {
+        background: rgba(255,255,255,0.5);
+        transform: scale(1.01);
+        transition: 0.2s ease-in-out;
+    }
+
+    /* Approve Button */
+    .btn-approve {
+        background: linear-gradient(90deg, #FFBF86, #F4A261);
+        color: #0F3D3E;
+        font-weight: 600;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 0.5rem;
+    }
+
+        .btn-approve:hover {
+            background: linear-gradient(90deg, #2F8F9D, #0F3D3E);
+            color: white;
+        }
+
+    /* Reject Button */
+    .btn-reject {
+        background: linear-gradient(90deg, #D62828, #EF476F);
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 0.5rem;
+    }
+
+        .btn-reject:hover {
+            background: linear-gradient(90deg, #EF476F, #D62828);
+        }
+
+    /* Back Button */
+    .btn-back {
+        background: #2F8F9D;
+        color: #fff;
+        font-weight: 700;
+        padding: 10px 24px;
+        border-radius: 0.6rem;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+        .btn-back:hover {
+            background: #0F3D3E;
+            color: #FFBF86;
+        }
+
+</style>
